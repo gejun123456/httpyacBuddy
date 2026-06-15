@@ -1,0 +1,41 @@
+{
+  "name": "httpyacbuddy",
+  "displayName": "httpYac Buddy",
+  "description": "Generate httpYac .http files from Spring controllers via CodeLens",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:java"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "httpYacBuddy.generate",
+        "title": "Generate HTTP Request"
+      },
+      {
+        "command": "httpYacBuddy.open",
+        "title": "Open HTTP Request"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./ --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.75.0",
+    "esbuild": "^0.21.0",
+    "typescript": "^5.4.0"
+  }
+}
