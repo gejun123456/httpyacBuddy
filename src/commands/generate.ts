@@ -3,6 +3,7 @@ import * as path from 'path';
 import { CodeLensArgs } from '../types';
 import { resolveHttpFilePath } from '../util/workspace';
 import { nextBlockName, requestBlockBaseName } from '../util/httpFile';
+import { resolveBaseUrl } from '../util/springConfig';
 import { DEFAULT_BASE_URL, renderBlock } from '../generator/httpFileGenerator';
 import { DtoParser } from '../parser/dtoParser';
 
@@ -26,7 +27,7 @@ export function createGenerateCommand(dtoParser: DtoParser) {
 
     const blockBaseName = requestBlockBaseName(controller, method);
     const blockName = nextBlockName(existing, blockBaseName);
-    const baseUrl = vscode.workspace.getConfiguration('httpYacBuddy').get('baseUrl', DEFAULT_BASE_URL);
+    const baseUrl = await resolveBaseUrl(controller.filePath, DEFAULT_BASE_URL);
     const block = await renderBlock(controller, method, blockName, dtoParser, baseUrl);
 
     let next: string;

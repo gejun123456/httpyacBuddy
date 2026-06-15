@@ -53,6 +53,12 @@ export function requestBlockBaseName(controller: ControllerInfo, method: MethodI
   return `${method.name}_${method.httpMethod}`;
 }
 
+export function inferMethodNameFromBlock(blockName: string): string {
+  return blockName
+    .replace(/_\d+$/, '')
+    .replace(/_(GET|POST|PUT|DELETE|PATCH)$/, '');
+}
+
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

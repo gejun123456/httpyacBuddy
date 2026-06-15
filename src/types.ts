@@ -8,6 +8,7 @@ export interface ParameterInfo {
   required: boolean;
   defaultValue?: string;
   kind: ParameterKind;
+  expandObject?: boolean;
 }
 
 export interface MethodInfo {

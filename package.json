@@ -4,6 +4,7 @@
   "description": "Generate httpYac .http files from Spring controllers via CodeLens",
   "version": "0.0.1",
   "publisher": "local",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -11,7 +12,10 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:java"
+    "onLanguage:java",
+    "onLanguage:http",
+    "workspaceContains:**/*.http",
+    "onCommand:httpYacBuddy.openController"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -21,7 +25,7 @@
         "httpYacBuddy.baseUrl": {
           "type": "string",
           "default": "http://localhost:8080",
-          "description": "Base URL used when generating httpYac request blocks."
+          "description": "Base URL used when generating httpYac request blocks. If unset by the user, httpYac Buddy tries to detect server.port from Spring application config files before falling back to this default."
         }
       }
     },
@@ -33,6 +37,10 @@
       {
         "command": "httpYacBuddy.open",
         "title": "Open HTTP Request"
+      },
+      {
+        "command": "httpYacBuddy.openController",
+        "title": "Open Java Controller"
       }
     ]
   },

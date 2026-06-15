@@ -8,6 +8,7 @@ Above every Spring `@*Mapping` method in a Java file, two CodeLens actions appea
 
 - **Generate HTTP Request** — Creates or appends to `src/main/resources/{ControllerName}.http` with a ready-to-send request block. Path variables, query parameters and request body DTO fields are pre-filled with type-based default values.
 - **Open HTTP Request** — Jumps to the corresponding `###` block in the `.http` file. If multiple blocks exist for the same method or HTTP verb, a QuickPick lets you choose.
+- **Open Java Controller** — From a `###` block in a generated `.http` file, jumps back to the matching Java controller method.
 
 ## Quick start
 
@@ -24,13 +25,14 @@ Press **F5** in VS Code to launch the Extension Development Host. Open a Spring 
 - One file per controller, methods separated by `###`
 - Repeat generations append new blocks named `methodName_2`, `methodName_3`, …
 - If one Java method maps to multiple HTTP verbs, blocks are named `methodName_GET`, `methodName_POST`, etc.
-- Base URL: configurable via `httpYacBuddy.baseUrl`, defaulting to `http://localhost:8080`
+- Unannotated complex parameters and `@ModelAttribute` are expanded from DTO fields; `@RequestBody` generates a JSON body.
+- Base URL: auto-detects `server.port` from Spring `application.properties`, `application.yml`, or `application.yaml`; `httpYacBuddy.baseUrl` can override it, and the fallback is `http://localhost:8080`
 
 ## DTO default values
 
 | Java type | Default |
 |---|---|
-| `String` | `""` |
+| `String` | field or parameter name, e.g. `"username"` |
 | `int`, `long`, `BigDecimal`, … | `0` |
 | `double`, `float` | `0.0` |
 | `boolean` | `false` |
@@ -43,3 +45,7 @@ Press **F5** in VS Code to launch the Extension Development Host. Open a Spring 
 ## Out of scope (intentional)
 
 HTTP execution, OpenAPI/Swagger integration, controller ↔ http navigation, AI mock data, environment management. These may land in future versions.
+
+## License
+
+MIT

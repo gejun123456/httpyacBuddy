@@ -345,14 +345,18 @@ function classifyParameters(params: ParsedParam[]) {
       ['PathVariable', 'RequestParam', 'RequestHeader', 'RequestBody', 'ModelAttribute'].includes(a.name)
     );
     let kind: ParameterKind;
+    let expandObject = false;
     if (ann) {
       if (ann.name === 'PathVariable') kind = 'path';
       else if (ann.name === 'RequestHeader') kind = 'header';
       else if (ann.name === 'RequestBody') kind = 'body';
-      else kind = 'query';
+      else {
+        kind = 'query';
+        expandObject = ann.name === 'ModelAttribute' && !isScalarType(p.javaType);
+      }
     } else {
-      if (isScalarType(p.javaType)) kind = 'query';
-      else continue;
+      kind = 'query';
+      expandObject = !isScalarType(p.javaType);
     }
 
     const info: ParameterInfo = {
@@ -361,6 +365,7 @@ function classifyParameters(params: ParsedParam[]) {
       required: extractAnnotationRequired(ann?.argText) ?? true,
       defaultValue: extractAnnotationDefault(ann?.argText),
       kind,
+      expandObject,
     };
 
     if (kind === 'path') pathVariables.push(info);

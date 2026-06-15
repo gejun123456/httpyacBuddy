@@ -3,6 +3,8 @@ import { CodeLensArgs } from '../types';
 import { resolveHttpFilePath } from '../util/workspace';
 import { listMatchingBlocks, requestBlockBaseName } from '../util/httpFile';
 
+const GENERATE_ACTION = 'Generate HTTP Request';
+
 export function createOpenCommand() {
   return async (args: CodeLensArgs) => {
     if (!args?.controller || !args?.method) {
@@ -18,7 +20,11 @@ export function createOpenCommand() {
       const bytes = await vscode.workspace.fs.readFile(uri);
       content = new TextDecoder('utf8').decode(bytes);
     } catch {
-      vscode.window.showWarningMessage(`未找到 ${controller.className}.http，请先 Generate HTTP Request`);
+      const picked = await vscode.window.showWarningMessage(
+        `未找到 ${controller.className}.http，请先生成请求。`,
+        GENERATE_ACTION
+      );
+      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('httpYacBuddy.generate', args);
       return;
     }
 
@@ -28,7 +34,11 @@ export function createOpenCommand() {
       blocks = listMatchingBlocks(content, method.name);
     }
     if (blocks.length === 0) {
-      vscode.window.showWarningMessage(`${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先 Generate`);
+      const picked = await vscode.window.showWarningMessage(
+        `${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先生成请求。`,
+        GENERATE_ACTION
+      );
+      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('httpYacBuddy.generate', args);
       return;
     }
 

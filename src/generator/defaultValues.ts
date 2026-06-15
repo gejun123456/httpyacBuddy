@@ -33,6 +33,8 @@ const SCALAR_MAP: Record<string, JsonValue> = {
 
 const COLLECTION_TYPES = new Set(['List', 'ArrayList', 'LinkedList', 'Set', 'HashSet', 'TreeSet', 'Collection', 'Iterable']);
 const MAP_TYPES = new Set(['Map', 'HashMap', 'LinkedHashMap', 'TreeMap']);
+const NAMED_STRING_TYPES = new Set(['String', 'CharSequence']);
+const NAMED_CHAR_TYPES = new Set(['char', 'Character']);
 
 /**
  * Strip leading qualifiers ("java.util.") so "java.util.List<X>" becomes "List<X>".
@@ -70,24 +72,26 @@ function splitTopLevel(s: string, sep: string): string[] {
 export class DefaultValueResolver {
   constructor(private dtoParser: DtoParser, private imports: Record<string, string>) {}
 
-  async resolve(javaType: string, visited: Set<string> = new Set()): Promise<JsonValue> {
+  async resolve(javaType: string, valueName?: string, visited: Set<string> = new Set()): Promise<JsonValue> {
     const t = unqualify(javaType).trim();
     if (!t) return null;
 
     if (t.endsWith('[]')) {
       const inner = t.slice(0, -2);
-      return [await this.resolve(inner, visited)];
+      return [await this.resolve(inner, valueName, visited)];
     }
     const { base, args } = parseGeneric(t);
 
+    if (NAMED_STRING_TYPES.has(base)) return valueName || String(SCALAR_MAP[base]);
+    if (NAMED_CHAR_TYPES.has(base)) return valueName?.charAt(0) || 'a';
     if (base in SCALAR_MAP) return SCALAR_MAP[base];
 
     if (COLLECTION_TYPES.has(base)) {
       const elem = args[0] ?? 'Object';
-      return [await this.resolve(elem, visited)];
+      return [await this.resolve(elem, valueName, visited)];
     }
     if (MAP_TYPES.has(base)) return {};
-    if (base === 'Optional') return args[0] ? await this.resolve(args[0], visited) : null;
+    if (base === 'Optional') return args[0] ? await this.resolve(args[0], valueName, visited) : null;
     if (base === 'Object' || base === 'Void' || base === 'void') return null;
 
     // Treat as a DTO — recursively expand fields.
@@ -97,7 +101,7 @@ export class DefaultValueResolver {
     if (!fields) return null;
     const obj: { [k: string]: JsonValue } = {};
     for (const f of fields) {
-      obj[f.name] = await this.resolve(f.javaType, new Set(visited));
+      obj[f.name] = await this.resolve(f.javaType, f.name, new Set(visited));
     }
     return obj;
   }
