@@ -19,6 +19,7 @@
   "categories": [
     "Other"
   ],
+  "icon": "assets/icon.png",
   "activationEvents": [
     "onLanguage:java",
     "onLanguage:http",
@@ -61,12 +62,14 @@
     "build": "node esbuild.js",
     "watch": "node esbuild.js --watch",
     "vscode:prepublish": "npm run build",
-    "compile": "tsc -p ./ --noEmit"
+    "compile": "tsc -p ./ --noEmit",
+    "build:icon": "node scripts/build-icon.js"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.75.0",
     "esbuild": "^0.21.0",
+    "sharp": "^0.33.0",
     "typescript": "^5.4.0"
   }
 }

@@ -3,6 +3,8 @@
 .idea/**
 .gitignore
 src/**
+scripts/**
+assets/icon.svg
 tsconfig.json
 esbuild.js
 out/**
