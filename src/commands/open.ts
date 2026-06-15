@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { CodeLensArgs } from '../types';
 import { resolveHttpFilePath } from '../util/workspace';
-import { listMatchingBlocks } from '../util/httpFile';
+import { listMatchingBlocks, requestBlockBaseName } from '../util/httpFile';
 
 export function createOpenCommand() {
   return async (args: CodeLensArgs) => {
@@ -22,9 +22,13 @@ export function createOpenCommand() {
       return;
     }
 
-    const blocks = listMatchingBlocks(content, method.name);
+    const blockBaseName = requestBlockBaseName(controller, method);
+    let blocks = listMatchingBlocks(content, blockBaseName);
+    if (blocks.length === 0 && blockBaseName !== method.name) {
+      blocks = listMatchingBlocks(content, method.name);
+    }
     if (blocks.length === 0) {
-      vscode.window.showWarningMessage(`${controller.className}.http 中未找到 "${method.name}" 的请求块，请先 Generate`);
+      vscode.window.showWarningMessage(`${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先 Generate`);
       return;
     }
 

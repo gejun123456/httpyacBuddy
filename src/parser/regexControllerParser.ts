@@ -46,7 +46,8 @@ export class RegexControllerParser implements ControllerParser {
     const imports = extractImports(stripped);
     const basePath = extractClassBasePath(stripped);
     const classLine = findClassLine(source, className);
-    const methods = extractMethods(stripped);
+    const classBody = findClassBodyRange(stripped, className);
+    const methods = classBody ? extractMethods(stripped, classBody.start, classBody.end) : [];
 
     return { className, classLine, basePath, imports, filePath, methods };
   }
@@ -77,6 +78,16 @@ function findClassLine(source: string, className: string): number {
   return 0;
 }
 
+function findClassBodyRange(source: string, className: string): { start: number; end: number } | null {
+  const classMatch = new RegExp(`\\bclass\\s+${escapeRegex(className)}\\b`).exec(source);
+  if (!classMatch) return null;
+  const open = source.indexOf('{', classMatch.index + classMatch[0].length);
+  if (open < 0) return null;
+  const close = findBalanced(source, open, '{', '}');
+  if (close < 0) return null;
+  return { start: open + 1, end: close };
+}
+
 function extractClassBasePath(source: string): string {
   // Find @RequestMapping that appears before the class declaration
   const classIdx = source.search(/\bclass\s+\w+/);
@@ -87,11 +98,13 @@ function extractClassBasePath(source: string): string {
   return extractPathFromArgs(m[1]);
 }
 
-function extractMethods(stripped: string): MethodInfo[] {
+function extractMethods(stripped: string, start: number, end: number): MethodInfo[] {
   const methods: MethodInfo[] = [];
   const mappingRegex = /@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping|RequestMapping)\b/g;
+  mappingRegex.lastIndex = start;
   let m: RegExpExecArray | null;
   while ((m = mappingRegex.exec(stripped))) {
+    if (m.index >= end) break;
     const annKind = m[1];
     const annStart = m.index;
     // Find optional (...) args
@@ -102,6 +115,7 @@ function extractMethods(stripped: string): MethodInfo[] {
     if (stripped[p] === '(') {
       const close = findBalanced(stripped, p, '(', ')');
       if (close < 0) continue;
+      if (close >= end) break;
       argText = stripped.slice(p + 1, close);
       afterAnnPos = close + 1;
     }
@@ -109,27 +123,24 @@ function extractMethods(stripped: string): MethodInfo[] {
     if (!sig) continue;
 
     const pathSuffix = extractPathFromArgs(argText);
-    let httpMethod: HttpMethod | undefined;
-    if (annKind === 'RequestMapping') {
-      httpMethod = extractMethodFromArgs(argText) ?? 'GET';
-    } else {
-      httpMethod = MAPPING_TO_METHOD[annKind];
-    }
-    if (!httpMethod) continue;
+    const httpMethods = annKind === 'RequestMapping' ? extractMethodsFromArgs(argText, 'GET') : [MAPPING_TO_METHOD[annKind]];
+    if (httpMethods.length === 0) continue;
 
     const params = sig.params.map(parseParameter).filter((x): x is ParsedParam => !!x);
     const { pathVariables, queryParams, headers, requestBody } = classifyParameters(params);
 
-    methods.push({
-      name: sig.name,
-      annotationLine: countLinesBefore(stripped, annStart),
-      httpMethod,
-      pathSuffix,
-      pathVariables,
-      queryParams,
-      headers,
-      requestBody,
-    });
+    for (const httpMethod of httpMethods) {
+      methods.push({
+        name: sig.name,
+        annotationLine: countLinesBefore(stripped, annStart),
+        httpMethod,
+        pathSuffix,
+        pathVariables,
+        queryParams,
+        headers,
+        requestBody,
+      });
+    }
   }
   return methods;
 }
@@ -386,12 +397,20 @@ function extractPathFromArgs(args: string): string {
   return '';
 }
 
-function extractMethodFromArgs(args: string): HttpMethod | null {
-  const m = args.match(/method\s*=\s*(?:RequestMethod\.)?(\w+)/);
-  if (!m) return null;
-  const v = m[1].toUpperCase();
-  if (v === 'GET' || v === 'POST' || v === 'PUT' || v === 'DELETE' || v === 'PATCH') return v as HttpMethod;
-  return null;
+function extractMethodsFromArgs(args: string, defaultMethod: HttpMethod): HttpMethod[] {
+  const m = args.match(/method\s*=\s*(\{[^}]*\}|[^,)]+)/);
+  if (!m) return [defaultMethod];
+  const raw = m[1].replace(/^\s*\{\s*/, '').replace(/\s*\}\s*$/, '');
+  const methods: HttpMethod[] = [];
+  for (const part of splitTopLevel(raw, ',')) {
+    const value = part.replace(/\bRequestMethod\./g, '').trim().toUpperCase();
+    if (isHttpMethod(value) && !methods.includes(value)) methods.push(value);
+  }
+  return methods;
+}
+
+function isHttpMethod(value: string): value is HttpMethod {
+  return value === 'GET' || value === 'POST' || value === 'PUT' || value === 'DELETE' || value === 'PATCH';
 }
 
 function extractAnnotationName(args?: string): string | null {
@@ -413,4 +432,8 @@ function extractAnnotationDefault(args?: string): string | undefined {
   if (!args) return undefined;
   const m = args.match(/defaultValue\s*=\s*"([^"]*)"/);
   return m ? m[1] : undefined;
+}
+
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

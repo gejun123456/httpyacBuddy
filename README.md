@@ -7,7 +7,7 @@ A VS Code extension that generates [httpYac](https://httpyac.github.io/) `.http`
 Above every Spring `@*Mapping` method in a Java file, two CodeLens actions appear:
 
 - **Generate HTTP Request** — Creates or appends to `src/main/resources/{ControllerName}.http` with a ready-to-send request block. Path variables, query parameters and request body DTO fields are pre-filled with type-based default values.
-- **Open HTTP Request** — Jumps to the corresponding `###` block in the `.http` file. If multiple blocks exist for the same method (e.g. after repeated generations), a QuickPick lets you choose.
+- **Open HTTP Request** — Jumps to the corresponding `###` block in the `.http` file. If multiple blocks exist for the same method or HTTP verb, a QuickPick lets you choose.
 
 ## Quick start
 
@@ -23,7 +23,8 @@ Press **F5** in VS Code to launch the Extension Development Host. Open a Spring 
 - Output file: `src/main/resources/{ControllerName}.http`
 - One file per controller, methods separated by `###`
 - Repeat generations append new blocks named `methodName_2`, `methodName_3`, …
-- Base URL: hardcoded `http://localhost:8080` (env management is intentionally out of scope for the MVP)
+- If one Java method maps to multiple HTTP verbs, blocks are named `methodName_GET`, `methodName_POST`, etc.
+- Base URL: configurable via `httpYacBuddy.baseUrl`, defaulting to `http://localhost:8080`
 
 ## DTO default values
 

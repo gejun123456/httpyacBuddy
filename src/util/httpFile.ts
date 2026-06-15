@@ -1,3 +1,5 @@
+import { ControllerInfo, MethodInfo } from '../types';
+
 export interface HttpBlock {
   name: string;
   line: number;
@@ -43,6 +45,12 @@ export function nextBlockName(content: string, methodName: string): string {
     }
   }
   return `${methodName}_${max + 1}`;
+}
+
+export function requestBlockBaseName(controller: ControllerInfo, method: MethodInfo): string {
+  const variants = controller.methods.filter((candidate) => candidate.name === method.name);
+  if (variants.length <= 1) return method.name;
+  return `${method.name}_${method.httpMethod}`;
 }
 
 function escapeRegex(s: string): string {

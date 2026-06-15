@@ -2,7 +2,7 @@ import { ControllerInfo, MethodInfo, ParameterInfo } from '../types';
 import { DtoParser } from '../parser/dtoParser';
 import { DefaultValueResolver, JsonValue } from './defaultValues';
 
-const BASE_URL = 'http://localhost:8080';
+export const DEFAULT_BASE_URL = 'http://localhost:8080';
 
 export interface RenderResult {
   /** Full text for the new ### block (without leading or trailing newlines). */
@@ -17,11 +17,12 @@ export async function renderBlock(
   controller: ControllerInfo,
   method: MethodInfo,
   blockName: string,
-  dtoParser: DtoParser
+  dtoParser: DtoParser,
+  baseUrl = DEFAULT_BASE_URL
 ): Promise<RenderResult> {
   const resolver = new DefaultValueResolver(dtoParser, controller.imports);
 
-  let url = BASE_URL + joinPath(controller.basePath, method.pathSuffix);
+  let url = trimTrailingSlash(baseUrl || DEFAULT_BASE_URL) + joinPath(controller.basePath, method.pathSuffix);
 
   // Substitute path variables.
   for (const pv of method.pathVariables) {
@@ -70,6 +71,10 @@ function joinPath(base: string, suffix: string): string {
   if (!s) return b.startsWith('/') ? b : '/' + b;
   if (!b) return s.startsWith('/') ? s : '/' + s;
   return (b.startsWith('/') ? b : '/' + b) + '/' + s;
+}
+
+function trimTrailingSlash(value: string): string {
+  return value.replace(/\/+$/, '');
 }
 
 function pickPathValue(p: ParameterInfo): string {

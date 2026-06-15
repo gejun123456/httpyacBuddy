@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { CodeLensArgs } from '../types';
 import { resolveHttpFilePath } from '../util/workspace';
-import { nextBlockName } from '../util/httpFile';
-import { renderBlock } from '../generator/httpFileGenerator';
+import { nextBlockName, requestBlockBaseName } from '../util/httpFile';
+import { DEFAULT_BASE_URL, renderBlock } from '../generator/httpFileGenerator';
 import { DtoParser } from '../parser/dtoParser';
 
 export function createGenerateCommand(dtoParser: DtoParser) {
@@ -24,8 +24,10 @@ export function createGenerateCommand(dtoParser: DtoParser) {
       existing = '';
     }
 
-    const blockName = nextBlockName(existing, method.name);
-    const block = await renderBlock(controller, method, blockName, dtoParser);
+    const blockBaseName = requestBlockBaseName(controller, method);
+    const blockName = nextBlockName(existing, blockBaseName);
+    const baseUrl = vscode.workspace.getConfiguration('httpYacBuddy').get('baseUrl', DEFAULT_BASE_URL);
+    const block = await renderBlock(controller, method, blockName, dtoParser, baseUrl);
 
     let next: string;
     if (!existing.trim()) {

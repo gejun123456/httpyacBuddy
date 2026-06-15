@@ -8,6 +8,10 @@ export interface DtoField {
 export class DtoParser {
   private cache = new Map<string, DtoField[] | null>();
 
+  clearCache(): void {
+    this.cache.clear();
+  }
+
   async fields(simpleName: string, imports: Record<string, string>): Promise<DtoField[] | null> {
     const cacheKey = imports[simpleName] ?? simpleName;
     if (this.cache.has(cacheKey)) return this.cache.get(cacheKey)!;
