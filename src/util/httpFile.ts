@@ -27,6 +27,29 @@ export function listMatchingBlocks(content: string, methodName: string): HttpBlo
   return all.filter((b) => re.test(b.name));
 }
 
+export function extractBlockText(content: string, blockName: string): string | null {
+  const lines = content.split(/\r?\n/);
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^###\s+(.+?)\s*$/);
+    if (m?.[1] === blockName) {
+      start = i;
+      break;
+    }
+  }
+  if (start < 0) return null;
+
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) {
+    if (/^###\s+/.test(lines[i])) {
+      end = i;
+      break;
+    }
+  }
+
+  return lines.slice(start, end).join('\n').trim();
+}
+
 /**
  * Decide the new block name when appending. If `methodName` is unused, return
  * it as-is; otherwise return `methodName_N` where N is one greater than the

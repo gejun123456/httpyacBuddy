@@ -6,6 +6,7 @@ import { HttpFileCodeLensProvider } from './httpCodeLensProvider';
 import { createGenerateCommand } from './commands/generate';
 import { createOpenCommand } from './commands/open';
 import { createOpenControllerCommand } from './commands/openController';
+import { createCopyAiPromptCommand } from './commands/copyAiPrompt';
 
 export function activate(context: vscode.ExtensionContext): void {
   const parser = new RegexControllerParser();
@@ -28,6 +29,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('httpYacBuddy.generate', createGenerateCommand(dtoParser)),
     vscode.commands.registerCommand('httpYacBuddy.open', createOpenCommand()),
     vscode.commands.registerCommand('httpYacBuddy.openController', createOpenControllerCommand(parser)),
+    vscode.commands.registerCommand('httpYacBuddy.copyAiPrompt', createCopyAiPromptCommand(parser)),
     vscode.workspace.onDidChangeTextDocument((event) => {
       if (event.document.languageId === 'java' || event.document.uri.fsPath.endsWith('.http')) scheduleCodeLensRefresh();
     }),

@@ -9,6 +9,7 @@ Above every Spring `@*Mapping` method in a Java file, two CodeLens actions appea
 - **Generate HTTP Request** — Creates or appends to `src/main/resources/{ControllerName}.http` with a ready-to-send request block. Path variables, query parameters and request body DTO fields are pre-filled with type-based default values.
 - **Open HTTP Request** — Jumps to the corresponding `###` block in the `.http` file. If multiple blocks exist for the same method or HTTP verb, a QuickPick lets you choose.
 - **Open Java Controller** — From a `###` block in a generated `.http` file, jumps back to the matching Java controller method.
+- **Copy AI Parameter Prompt** — From a `###` block, copies a prompt containing the current request block and Java controller method so an AI assistant can replace placeholders with realistic sample values.
 
 ## Quick start
 
@@ -44,7 +45,7 @@ Press **F5** in VS Code to launch the Extension Development Host. Open a Spring 
 
 ## Out of scope (intentional)
 
-HTTP execution, OpenAPI/Swagger integration, controller ↔ http navigation, AI mock data, environment management. These may land in future versions.
+HTTP execution, OpenAPI/Swagger integration, direct AI API calls, environment management. These may land in future versions.
 
 ## License
 

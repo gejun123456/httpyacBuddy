@@ -17,14 +17,21 @@ export class HttpFileCodeLensProvider implements vscode.CodeLensProvider {
   provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
     if (!document.uri.fsPath.endsWith('.http')) return [];
 
-    return listAllBlocks(document.getText()).map((block) => {
+    return listAllBlocks(document.getText()).flatMap((block) => {
       const range = new vscode.Range(block.line, 0, block.line, 0);
       const args: HttpCodeLensArgs = { httpPath: document.uri.fsPath, blockName: block.name };
-      return new vscode.CodeLens(range, {
-        title: '$(go-to-file) Open Java Controller',
-        command: 'httpYacBuddy.openController',
-        arguments: [args],
-      });
+      return [
+        new vscode.CodeLens(range, {
+          title: '$(go-to-file) Open Java Controller',
+          command: 'httpYacBuddy.openController',
+          arguments: [args],
+        }),
+        new vscode.CodeLens(range, {
+          title: '$(sparkle) Copy AI Parameter Prompt',
+          command: 'httpYacBuddy.copyAiPrompt',
+          arguments: [args],
+        }),
+      ];
     });
   }
 }

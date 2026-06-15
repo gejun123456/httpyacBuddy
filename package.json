@@ -5,6 +5,14 @@
   "version": "0.0.1",
   "publisher": "local",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gejun123456/httpyacBuddy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gejun123456/httpyacBuddy/issues"
+  },
+  "homepage": "https://github.com/gejun123456/httpyacBuddy#readme",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -15,7 +23,8 @@
     "onLanguage:java",
     "onLanguage:http",
     "workspaceContains:**/*.http",
-    "onCommand:httpYacBuddy.openController"
+    "onCommand:httpYacBuddy.openController",
+    "onCommand:httpYacBuddy.copyAiPrompt"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -41,6 +50,10 @@
       {
         "command": "httpYacBuddy.openController",
         "title": "Open Java Controller"
+      },
+      {
+        "command": "httpYacBuddy.copyAiPrompt",
+        "title": "Copy AI Parameter Prompt"
       }
     ]
   },
