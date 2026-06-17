@@ -7,7 +7,7 @@ import { inferMethodNameFromBlock } from '../util/httpFile';
 export function createOpenControllerCommand(parser: RegexControllerParser) {
   return async (args: HttpCodeLensArgs) => {
     if (!args?.httpPath || !args?.blockName) {
-      vscode.window.showErrorMessage('httpYacBuddy: invalid HTTP CodeLens arguments');
+      vscode.window.showErrorMessage('Spring HTTP Buddy: invalid HTTP CodeLens arguments');
       return;
     }
 

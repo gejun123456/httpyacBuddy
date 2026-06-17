@@ -1,6 +1,7 @@
 .vscode/**
 .claude/**
 .idea/**
+demo/**
 .gitignore
 src/**
 scripts/**

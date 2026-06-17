@@ -10,7 +10,7 @@ import { DtoParser } from '../parser/dtoParser';
 export function createGenerateCommand(dtoParser: DtoParser) {
   return async (args: CodeLensArgs) => {
     if (!args?.controller || !args?.method) {
-      vscode.window.showErrorMessage('httpYacBuddy: invalid CodeLens arguments');
+      vscode.window.showErrorMessage('Spring HTTP Buddy: invalid CodeLens arguments');
       return;
     }
     const { controller, method } = args;

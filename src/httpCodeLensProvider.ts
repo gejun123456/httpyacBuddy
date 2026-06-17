@@ -23,12 +23,12 @@ export class HttpFileCodeLensProvider implements vscode.CodeLensProvider {
       return [
         new vscode.CodeLens(range, {
           title: '$(go-to-file) Open Java Controller',
-          command: 'httpYacBuddy.openController',
+          command: 'springHttpBuddy.openController',
           arguments: [args],
         }),
         new vscode.CodeLens(range, {
           title: '$(sparkle) Copy AI Parameter Prompt',
-          command: 'httpYacBuddy.copyAiPrompt',
+          command: 'springHttpBuddy.copyAiPrompt',
           arguments: [args],
         }),
       ];

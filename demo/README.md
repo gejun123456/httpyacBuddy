@@ -1,6 +1,6 @@
-# httpYac Buddy — Demo Project
+# Spring HTTP Buddy — Demo Project
 
-A small Spring Boot project for exercising every feature of the **httpYac Buddy** extension.
+A small Spring Boot project for exercising every feature of the **Spring HTTP Buddy** extension.
 
 ## How to test
 

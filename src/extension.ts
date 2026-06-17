@@ -26,10 +26,10 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.languages.registerCodeLensProvider({ language: 'java', scheme: 'file' }, codeLensProvider),
     vscode.languages.registerCodeLensProvider({ scheme: 'file', pattern: '**/*.http' }, httpCodeLensProvider),
-    vscode.commands.registerCommand('httpYacBuddy.generate', createGenerateCommand(dtoParser)),
-    vscode.commands.registerCommand('httpYacBuddy.open', createOpenCommand()),
-    vscode.commands.registerCommand('httpYacBuddy.openController', createOpenControllerCommand(parser)),
-    vscode.commands.registerCommand('httpYacBuddy.copyAiPrompt', createCopyAiPromptCommand(parser)),
+    vscode.commands.registerCommand('springHttpBuddy.generate', createGenerateCommand(dtoParser)),
+    vscode.commands.registerCommand('springHttpBuddy.open', createOpenCommand()),
+    vscode.commands.registerCommand('springHttpBuddy.openController', createOpenControllerCommand(parser)),
+    vscode.commands.registerCommand('springHttpBuddy.copyAiPrompt', createCopyAiPromptCommand(parser)),
     vscode.workspace.onDidChangeTextDocument((event) => {
       if (event.document.languageId === 'java' || event.document.uri.fsPath.endsWith('.http')) scheduleCodeLensRefresh();
     }),

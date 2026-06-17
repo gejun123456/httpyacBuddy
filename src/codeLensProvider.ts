@@ -23,14 +23,14 @@ export class JavaControllerCodeLensProvider implements vscode.CodeLensProvider {
       lenses.push(
         new vscode.CodeLens(range, {
           title: `$(rocket) Generate ${method.httpMethod} Request`,
-          command: 'httpYacBuddy.generate',
+          command: 'springHttpBuddy.generate',
           arguments: [args],
         })
       );
       lenses.push(
         new vscode.CodeLens(range, {
           title: `$(go-to-file) Open ${method.httpMethod} Request`,
-          command: 'httpYacBuddy.open',
+          command: 'springHttpBuddy.open',
           arguments: [args],
         })
       );

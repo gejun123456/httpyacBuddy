@@ -8,7 +8,7 @@ const GENERATE_ACTION = 'Generate HTTP Request';
 export function createOpenCommand() {
   return async (args: CodeLensArgs) => {
     if (!args?.controller || !args?.method) {
-      vscode.window.showErrorMessage('httpYacBuddy: invalid CodeLens arguments');
+      vscode.window.showErrorMessage('Spring HTTP Buddy: invalid CodeLens arguments');
       return;
     }
     const { controller, method } = args;
@@ -24,7 +24,7 @@ export function createOpenCommand() {
         `未找到 ${controller.className}.http，请先生成请求。`,
         GENERATE_ACTION
       );
-      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('httpYacBuddy.generate', args);
+      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
       return;
     }
 
@@ -38,7 +38,7 @@ export function createOpenCommand() {
         `${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先生成请求。`,
         GENERATE_ACTION
       );
-      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('httpYacBuddy.generate', args);
+      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
       return;
     }
 

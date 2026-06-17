@@ -1,18 +1,18 @@
 {
-  "name": "httpyacbuddy",
-  "displayName": "httpYac Buddy",
-  "description": "Generate httpYac .http files from Spring controllers via CodeLens",
+  "name": "spring-http-buddy",
+  "displayName": "Spring HTTP Buddy",
+  "description": "Generate .http request files from Spring controllers via CodeLens. Works with REST Client, httpYac, and the IntelliJ HTTP Client.",
   "version": "0.0.1",
   "publisher": "gejun123456",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gejun123456/httpyacBuddy.git"
+    "url": "https://github.com/gejun123456/springHttpBuddy.git"
   },
   "bugs": {
-    "url": "https://github.com/gejun123456/httpyacBuddy/issues"
+    "url": "https://github.com/gejun123456/springHttpBuddy/issues"
   },
-  "homepage": "https://github.com/gejun123456/httpyacBuddy#readme",
+  "homepage": "https://github.com/gejun123456/springHttpBuddy#readme",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -24,44 +24,46 @@
     "spring",
     "http",
     "httpyac",
+    "rest-client",
     "springboot",
-    "rest"
+    "rest",
+    "codelens"
   ],
   "icon": "assets/icon.png",
   "activationEvents": [
     "onLanguage:java",
     "onLanguage:http",
     "workspaceContains:**/*.http",
-    "onCommand:httpYacBuddy.openController",
-    "onCommand:httpYacBuddy.copyAiPrompt"
+    "onCommand:springHttpBuddy.openController",
+    "onCommand:springHttpBuddy.copyAiPrompt"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
-      "title": "httpYac Buddy",
+      "title": "Spring HTTP Buddy",
       "properties": {
-        "httpYacBuddy.baseUrl": {
+        "springHttpBuddy.baseUrl": {
           "type": "string",
           "default": "http://localhost:8080",
-          "description": "Base URL used when generating httpYac request blocks. If unset by the user, httpYac Buddy tries to detect server.port from Spring application config files before falling back to this default."
+          "description": "Base URL used when generating .http request blocks. If unset by the user, Spring HTTP Buddy tries to detect server.port from Spring application config files before falling back to this default."
         }
       }
     },
     "commands": [
       {
-        "command": "httpYacBuddy.generate",
+        "command": "springHttpBuddy.generate",
         "title": "Generate HTTP Request"
       },
       {
-        "command": "httpYacBuddy.open",
+        "command": "springHttpBuddy.open",
         "title": "Open HTTP Request"
       },
       {
-        "command": "httpYacBuddy.openController",
+        "command": "springHttpBuddy.openController",
         "title": "Open Java Controller"
       },
       {
-        "command": "httpYacBuddy.copyAiPrompt",
+        "command": "springHttpBuddy.copyAiPrompt",
         "title": "Copy AI Parameter Prompt"
       }
     ]

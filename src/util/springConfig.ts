@@ -21,7 +21,7 @@ export async function resolveBaseUrl(controllerFilePath: string, fallbackBaseUrl
 }
 
 function getConfiguredBaseUrl(controllerFilePath: string): string | null {
-  const config = vscode.workspace.getConfiguration('httpYacBuddy', vscode.Uri.file(controllerFilePath));
+  const config = vscode.workspace.getConfiguration('springHttpBuddy', vscode.Uri.file(controllerFilePath));
   const inspected = config.inspect<string>('baseUrl');
   const hasExplicitValue = [
     'globalValue',

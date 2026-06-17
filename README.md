@@ -1,6 +1,8 @@
-# httpYac Buddy
+# Spring HTTP Buddy
 
-A VS Code extension that generates [httpYac](https://httpyac.github.io/) `.http` files from Spring controller methods via CodeLens.
+A VS Code extension that generates `.http` request files from Spring controller methods via CodeLens.
+
+The generated files use standard `.http` syntax, so they run as-is in [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), [httpYac](https://httpyac.github.io/), and the IntelliJ HTTP Client.
 
 ## Features (MVP)
 
@@ -27,7 +29,7 @@ Press **F5** in VS Code to launch the Extension Development Host. Open a Spring 
 - Repeat generations append new blocks named `methodName_2`, `methodName_3`, …
 - If one Java method maps to multiple HTTP verbs, blocks are named `methodName_GET`, `methodName_POST`, etc.
 - Unannotated complex parameters and `@ModelAttribute` are expanded from DTO fields; `@RequestBody` generates a JSON body.
-- Base URL: auto-detects `server.port` from Spring `application.properties`, `application.yml`, or `application.yaml`; `httpYacBuddy.baseUrl` can override it, and the fallback is `http://localhost:8080`
+- Base URL: auto-detects `server.port` from Spring `application.properties`, `application.yml`, or `application.yaml`; `springHttpBuddy.baseUrl` can override it, and the fallback is `http://localhost:8080`
 
 ## DTO default values
 
