@@ -3,7 +3,7 @@
   "displayName": "httpYac Buddy",
   "description": "Generate httpYac .http files from Spring controllers via CodeLens",
   "version": "0.0.1",
-  "publisher": "local",
+  "publisher": "gejun123456",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -18,6 +18,14 @@
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "java",
+    "spring",
+    "http",
+    "httpyac",
+    "springboot",
+    "rest"
   ],
   "icon": "assets/icon.png",
   "activationEvents": [
