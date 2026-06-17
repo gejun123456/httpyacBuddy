@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { CodeLensArgs } from '../types';
 import { resolveHttpFilePath } from '../util/workspace';
 import { listMatchingBlocks, requestBlockBaseName } from '../util/httpFile';
+import { t } from '../util/i18n';
 
 const GENERATE_ACTION = 'Generate HTTP Request';
 
@@ -21,7 +22,10 @@ export function createOpenCommand() {
       content = new TextDecoder('utf8').decode(bytes);
     } catch {
       const picked = await vscode.window.showWarningMessage(
-        `未找到 ${controller.className}.http，请先生成请求。`,
+        t(
+          `${controller.className}.http not found. Generate a request first.`,
+          `未找到 ${controller.className}.http，请先生成请求。`
+        ),
         GENERATE_ACTION
       );
       if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
@@ -35,7 +39,10 @@ export function createOpenCommand() {
     }
     if (blocks.length === 0) {
       const picked = await vscode.window.showWarningMessage(
-        `${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先生成请求。`,
+        t(
+          `No "${blockBaseName}" request block found in ${controller.className}.http. Generate a request first.`,
+          `${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先生成请求。`
+        ),
         GENERATE_ACTION
       );
       if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
@@ -50,7 +57,7 @@ export function createOpenCommand() {
           description: `line ${b.line + 1}`,
           block: b,
         })),
-        { placeHolder: `选择要打开的 ${method.name} 请求块` }
+        { placeHolder: t(`Select a ${method.name} request block to open`, `选择要打开的 ${method.name} 请求块`) }
       );
       if (!picked) return;
       target = picked.block;

@@ -3,6 +3,7 @@ import { HttpCodeLensArgs } from '../httpCodeLensProvider';
 import { RegexControllerParser } from '../parser/regexControllerParser';
 import { findControllerJavaFile } from '../util/javaController';
 import { inferMethodNameFromBlock } from '../util/httpFile';
+import { t } from '../util/i18n';
 
 export function createOpenControllerCommand(parser: RegexControllerParser) {
   return async (args: HttpCodeLensArgs) => {
@@ -14,7 +15,7 @@ export function createOpenControllerCommand(parser: RegexControllerParser) {
     const className = args.httpPath.replace(/^.*[\\/]/, '').replace(/\.http$/, '');
     const javaUri = await findControllerJavaFile(args.httpPath, className);
     if (!javaUri) {
-      vscode.window.showWarningMessage(`未找到 ${className}.java`);
+      vscode.window.showWarningMessage(t(`${className}.java not found`, `未找到 ${className}.java`));
       return;
     }
 
@@ -30,7 +31,12 @@ export function createOpenControllerCommand(parser: RegexControllerParser) {
     editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
 
     if (!targetMethod) {
-      vscode.window.showWarningMessage(`已打开 ${className}.java，但未找到 "${methodName}" 方法`);
+      vscode.window.showWarningMessage(
+        t(
+          `Opened ${className}.java, but method "${methodName}" was not found`,
+          `已打开 ${className}.java，但未找到 "${methodName}" 方法`
+        )
+      );
     }
   };
 }

@@ -4,9 +4,12 @@ import { HttpCodeLensArgs } from '../httpCodeLensProvider';
 import { RegexControllerParser } from '../parser/regexControllerParser';
 import { extractBlockText, inferMethodNameFromBlock } from '../util/httpFile';
 import { extractMethodSource, findControllerJavaFile } from '../util/javaController';
+import { isChinese } from '../util/i18n';
 
 export function createCopyAiPromptCommand(parser: RegexControllerParser) {
   return async (args: HttpCodeLensArgs) => {
+    const zh = isChinese();
+
     if (!args?.httpPath || !args?.blockName) {
       vscode.window.showErrorMessage('Spring HTTP Buddy: invalid HTTP CodeLens arguments');
       return;
@@ -15,14 +18,16 @@ export function createCopyAiPromptCommand(parser: RegexControllerParser) {
     const httpDoc = await vscode.workspace.openTextDocument(vscode.Uri.file(args.httpPath));
     const httpBlock = extractBlockText(httpDoc.getText(), args.blockName);
     if (!httpBlock) {
-      vscode.window.showWarningMessage(`未找到 "${args.blockName}" 请求块`);
+      vscode.window.showWarningMessage(
+        zh ? `未找到 "${args.blockName}" 请求块` : `Request block "${args.blockName}" not found`
+      );
       return;
     }
 
     const className = path.basename(args.httpPath, '.http');
     const javaUri = await findControllerJavaFile(args.httpPath, className);
     if (!javaUri) {
-      vscode.window.showWarningMessage(`未找到 ${className}.java`);
+      vscode.window.showWarningMessage(zh ? `未找到 ${className}.java` : `${className}.java not found`);
       return;
     }
 
@@ -31,18 +36,61 @@ export function createCopyAiPromptCommand(parser: RegexControllerParser) {
     const methodName = inferMethodNameFromBlock(args.blockName);
     const targetMethod = controller?.methods.find((method) => method.name === methodName);
     if (!targetMethod) {
-      vscode.window.showWarningMessage(`未找到 "${methodName}" 方法`);
+      vscode.window.showWarningMessage(zh ? `未找到 "${methodName}" 方法` : `Method "${methodName}" not found`);
       return;
     }
 
     const methodSource = extractMethodSource(javaDoc, targetMethod);
-    const prompt = buildPrompt(httpBlock, methodSource, className, methodName);
+    const prompt = buildPrompt(zh, httpBlock, methodSource, className, methodName);
     await vscode.env.clipboard.writeText(prompt);
-    vscode.window.showInformationMessage('AI 参数生成提示词已复制到剪贴板');
+    vscode.window.showInformationMessage(
+      zh ? 'AI 参数生成提示词已复制到剪贴板' : 'AI parameter prompt copied to clipboard'
+    );
   };
 }
 
-function buildPrompt(httpBlock: string, methodSource: string, className: string, methodName: string): string {
+function buildPrompt(
+  zh: boolean,
+  httpBlock: string,
+  methodSource: string,
+  className: string,
+  methodName: string
+): string {
+  return zh
+    ? buildChinesePrompt(httpBlock, methodSource, className, methodName)
+    : buildEnglishPrompt(httpBlock, methodSource, className, methodName);
+}
+
+function buildEnglishPrompt(httpBlock: string, methodSource: string, className: string, methodName: string): string {
+  return [
+    'You are an API testing assistant familiar with Spring MVC and .http syntax (REST Client / httpYac / IntelliJ HTTP Client).',
+    '',
+    'Based on the Java controller method and the current .http request block below, generate more realistic, business-meaningful sample values for the request params, path variables, query params, form params, headers and JSON body.',
+    '',
+    'Requirements:',
+    '- Return only the updated .http request block, with no explanation.',
+    '- Keep the HTTP method, URL path, parameter names, header names and JSON field names unchanged.',
+    '- You may replace placeholder values such as aa, username, 0, 1, false, 2026-01-01.',
+    '- For fields like email, phone, address, name, title, date, amount and id, generate reasonable test data.',
+    '- Do not use real personal data, real tokens, real passwords or production URLs; use obviously fake values for passwords/tokens.',
+    '- If the semantics cannot be inferred from the code, use concise, safe, readable sample values.',
+    '',
+    `Controller: ${className}`,
+    `Method: ${methodName}`,
+    '',
+    'Java controller method:',
+    '```java',
+    methodSource,
+    '```',
+    '',
+    'Current .http request block:',
+    '```http',
+    httpBlock,
+    '```',
+  ].join('\n');
+}
+
+function buildChinesePrompt(httpBlock: string, methodSource: string, className: string, methodName: string): string {
   return [
     '你是一个熟悉 Spring MVC 和 .http (REST Client / httpYac / IntelliJ HTTP Client) 语法的接口测试助手。',
     '',
