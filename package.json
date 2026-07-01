@@ -2,7 +2,7 @@
   "name": "spring-http-buddy",
   "displayName": "Spring HTTP Buddy",
   "description": "Generate .http request files from Spring controllers via CodeLens. Works with REST Client, httpYac, and the IntelliJ HTTP Client.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "gejun123456",
   "license": "MIT",
   "repository": {
