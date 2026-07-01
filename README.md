@@ -23,9 +23,10 @@ The output is plain `.http` text, so it lives **right next to your code, in Git*
 ## Quick start
 
 1. Install **Spring HTTP Buddy** from the VS Code Marketplace.
-2. Open your Spring Boot project and any `@RestController`.
-3. Click the **Generate HTTP Request** CodeLens above a mapping method.
-4. Open the generated `.http` file and send it with REST Client / httpYac / IntelliJ.
+2. (Recommended) Install **[httpYac](https://marketplace.visualstudio.com/items?itemName=anweber.vscode-httpyac)** — the best `.http` client for VS Code with environment variables, response assertions, and scripting support. The extension will remind you on first launch.
+3. Open your Spring Boot project and any `@RestController`.
+4. Click the **Generate HTTP Request** CodeLens above a mapping method.
+5. Open the generated `.http` file and send it with httpYac.
 
 That's it — no configuration required.
 

@@ -8,7 +8,31 @@ import { createOpenCommand } from './commands/open';
 import { createOpenControllerCommand } from './commands/openController';
 import { createCopyAiPromptCommand } from './commands/copyAiPrompt';
 
+const HTTPYAC_EXTENSION_ID = 'anweber.vscode-httpyac';
+const HTTPYAC_PROMPTED_KEY = 'httpyacPrompted';
+
+function promptHttpYacInstall(context: vscode.ExtensionContext): void {
+  if (context.globalState.get<boolean>(HTTPYAC_PROMPTED_KEY)) return;
+  if (vscode.extensions.getExtension(HTTPYAC_EXTENSION_ID)) return;
+
+  context.globalState.update(HTTPYAC_PROMPTED_KEY, true);
+
+  vscode.window
+    .showInformationMessage(
+      '推荐安装 httpYac 插件来运行 .http 文件，它对 .http 格式的支持最好（环境变量、断言、响应处理等）。',
+      '安装 httpYac',
+      '不再提示',
+    )
+    .then((choice) => {
+      if (choice === '安装 httpYac') {
+        vscode.commands.executeCommand('workbench.extensions.installExtension', HTTPYAC_EXTENSION_ID);
+      }
+    });
+}
+
 export function activate(context: vscode.ExtensionContext): void {
+  promptHttpYacInstall(context);
+
   const parser = new RegexControllerParser();
   const dtoParser = new DtoParser();
   const codeLensProvider = new JavaControllerCodeLensProvider(parser);
