@@ -15,7 +15,7 @@ export function createOpenControllerCommand(parser: RegexControllerParser) {
     const className = args.httpPath.replace(/^.*[\\/]/, '').replace(/\.http$/, '');
     const javaUri = await findControllerJavaFile(args.httpPath, className);
     if (!javaUri) {
-      vscode.window.showWarningMessage(t(`${className}.java not found`, `未找到 ${className}.java`));
+      vscode.window.showWarningMessage(t('openController.javaNotFound', { className }));
       return;
     }
 
@@ -32,10 +32,7 @@ export function createOpenControllerCommand(parser: RegexControllerParser) {
 
     if (!targetMethod) {
       vscode.window.showWarningMessage(
-        t(
-          `Opened ${className}.java, but method "${methodName}" was not found`,
-          `已打开 ${className}.java，但未找到 "${methodName}" 方法`
-        )
+        t('openController.methodNotFound', { className, methodName })
       );
     }
   };

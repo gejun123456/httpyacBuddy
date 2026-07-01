@@ -4,8 +4,6 @@ import { resolveHttpFilePath } from '../util/workspace';
 import { listMatchingBlocks, requestBlockBaseName } from '../util/httpFile';
 import { t } from '../util/i18n';
 
-const GENERATE_ACTION = 'Generate HTTP Request';
-
 export function createOpenCommand() {
   return async (args: CodeLensArgs) => {
     if (!args?.controller || !args?.method) {
@@ -21,14 +19,12 @@ export function createOpenCommand() {
       const bytes = await vscode.workspace.fs.readFile(uri);
       content = new TextDecoder('utf8').decode(bytes);
     } catch {
+      const genLabel = t('open.generateAction');
       const picked = await vscode.window.showWarningMessage(
-        t(
-          `${controller.className}.http not found. Generate a request first.`,
-          `未找到 ${controller.className}.http，请先生成请求。`
-        ),
-        GENERATE_ACTION
+        t('open.notFound', { className: controller.className }),
+        genLabel
       );
-      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
+      if (picked === genLabel) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
       return;
     }
 
@@ -38,14 +34,12 @@ export function createOpenCommand() {
       blocks = listMatchingBlocks(content, method.name);
     }
     if (blocks.length === 0) {
+      const genLabel = t('open.generateAction');
       const picked = await vscode.window.showWarningMessage(
-        t(
-          `No "${blockBaseName}" request block found in ${controller.className}.http. Generate a request first.`,
-          `${controller.className}.http 中未找到 "${blockBaseName}" 的请求块，请先生成请求。`
-        ),
-        GENERATE_ACTION
+        t('open.blockNotFound', { blockName: blockBaseName, className: controller.className }),
+        genLabel
       );
-      if (picked === GENERATE_ACTION) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
+      if (picked === genLabel) await vscode.commands.executeCommand('springHttpBuddy.generate', args);
       return;
     }
 
@@ -57,7 +51,7 @@ export function createOpenCommand() {
           description: `line ${b.line + 1}`,
           block: b,
         })),
-        { placeHolder: t(`Select a ${method.name} request block to open`, `选择要打开的 ${method.name} 请求块`) }
+        { placeHolder: t('open.selectBlock', { methodName: method.name }) }
       );
       if (!picked) return;
       target = picked.block;

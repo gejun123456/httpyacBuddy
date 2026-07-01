@@ -4,7 +4,7 @@ import { HttpCodeLensArgs } from '../httpCodeLensProvider';
 import { RegexControllerParser } from '../parser/regexControllerParser';
 import { extractBlockText, inferMethodNameFromBlock } from '../util/httpFile';
 import { extractMethodSource, findControllerJavaFile } from '../util/javaController';
-import { isChinese } from '../util/i18n';
+import { isChinese, t } from '../util/i18n';
 
 export function createCopyAiPromptCommand(parser: RegexControllerParser) {
   return async (args: HttpCodeLensArgs) => {
@@ -18,16 +18,14 @@ export function createCopyAiPromptCommand(parser: RegexControllerParser) {
     const httpDoc = await vscode.workspace.openTextDocument(vscode.Uri.file(args.httpPath));
     const httpBlock = extractBlockText(httpDoc.getText(), args.blockName);
     if (!httpBlock) {
-      vscode.window.showWarningMessage(
-        zh ? `未找到 "${args.blockName}" 请求块` : `Request block "${args.blockName}" not found`
-      );
+      vscode.window.showWarningMessage(t('copyAiPrompt.blockNotFound', { blockName: args.blockName }));
       return;
     }
 
     const className = path.basename(args.httpPath, '.http');
     const javaUri = await findControllerJavaFile(args.httpPath, className);
     if (!javaUri) {
-      vscode.window.showWarningMessage(zh ? `未找到 ${className}.java` : `${className}.java not found`);
+      vscode.window.showWarningMessage(t('copyAiPrompt.javaNotFound', { className }));
       return;
     }
 
@@ -36,16 +34,14 @@ export function createCopyAiPromptCommand(parser: RegexControllerParser) {
     const methodName = inferMethodNameFromBlock(args.blockName);
     const targetMethod = controller?.methods.find((method) => method.name === methodName);
     if (!targetMethod) {
-      vscode.window.showWarningMessage(zh ? `未找到 "${methodName}" 方法` : `Method "${methodName}" not found`);
+      vscode.window.showWarningMessage(t('copyAiPrompt.methodNotFound', { methodName }));
       return;
     }
 
     const methodSource = extractMethodSource(javaDoc, targetMethod);
     const prompt = buildPrompt(zh, httpBlock, methodSource, className, methodName);
     await vscode.env.clipboard.writeText(prompt);
-    vscode.window.showInformationMessage(
-      zh ? 'AI 参数生成提示词已复制到剪贴板' : 'AI parameter prompt copied to clipboard'
-    );
+    vscode.window.showInformationMessage(t('copyAiPrompt.copied'));
   };
 }
 

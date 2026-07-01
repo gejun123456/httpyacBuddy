@@ -7,6 +7,7 @@ import { createGenerateCommand } from './commands/generate';
 import { createOpenCommand } from './commands/open';
 import { createOpenControllerCommand } from './commands/openController';
 import { createCopyAiPromptCommand } from './commands/copyAiPrompt';
+import { t } from './util/i18n';
 
 const HTTPYAC_EXTENSION_ID = 'anweber.vscode-httpyac';
 const HTTPYAC_PROMPTED_KEY = 'httpyacPrompted';
@@ -17,14 +18,17 @@ function promptHttpYacInstall(context: vscode.ExtensionContext): void {
 
   context.globalState.update(HTTPYAC_PROMPTED_KEY, true);
 
+  const installLabel = t('httpyac.installLabel');
+  const dismissLabel = t('httpyac.dismissLabel');
+
   vscode.window
     .showInformationMessage(
-      '推荐安装 httpYac 插件来运行 .http 文件，它对 .http 格式的支持最好（环境变量、断言、响应处理等）。',
-      '安装 httpYac',
-      '不再提示',
+      t('httpyac.message'),
+      installLabel,
+      dismissLabel,
     )
     .then((choice) => {
-      if (choice === '安装 httpYac') {
+      if (choice === installLabel) {
         vscode.commands.executeCommand('workbench.extensions.installExtension', HTTPYAC_EXTENSION_ID);
       }
     });
